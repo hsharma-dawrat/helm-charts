@@ -1,0 +1,41 @@
+{
+  "namespace": "eventat-api-staging",
+  "replicaCount": 2,
+  "image": {
+    "repository": "registry.digitalocean.com/eventat/angular-staging",
+    "pullPolicy": "IfNotPresent",
+    "tag": "latest"
+  },
+  "service": {
+    "type": "ClusterIP",
+    "port": 80,
+    "containerPort": 4000
+  },
+  "server_name": "dev2.eventat.com",
+  "ingress": {
+    "enabled": true,
+    "className": "nginx",
+    "annotations": {
+      "cert-manager.io/cluster-issuer": "letsencrypt-staging"
+    },
+    "hosts": [
+      {
+        "host": "dev2.eventat.com",
+        "paths": [
+          {
+            "path": "/",
+            "pathType": "ImplementationSpecific"
+          }
+        ]
+      }
+    ],
+    "tls": [
+      {
+        "secretName": "ssl-tls",
+        "hosts": [
+          "dev2.eventat.com"
+        ]
+      }
+    ]
+  }
+}

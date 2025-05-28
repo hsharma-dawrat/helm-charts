@@ -3,12 +3,12 @@ entries:
   angular:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-05-28T08:42:55.880853542Z"
+    created: "2025-05-28T09:14:54.604281758Z"
     description: A Helm chart for Kubernetes
-    digest: bc4b35ac1b9f6b8e05fd6215d01c26eeb1fe04dcdde5bbd71808c71c16c2e7c4
+    digest: 281b13fc6f556c48143a0d4cc94e19645a2fe77f99f784af8baecd227d2b5d20
     name: angular
     type: application
     urls:
     - https://hsharma-dawrat.github.io/helm-charts/angular-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-28T08:42:55.879316398Z"
+generated: "2025-05-28T09:14:54.602427217Z"
