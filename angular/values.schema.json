@@ -1,41 +1,77 @@
 {
-  "namespace": "eventat-api-staging",
-  "replicaCount": 2,
-  "image": {
-    "repository": "registry.digitalocean.com/eventat/angular-staging",
-    "pullPolicy": "IfNotPresent",
-    "tag": "latest"
-  },
-  "service": {
-    "type": "ClusterIP",
-    "port": 80,
-    "containerPort": 4000
-  },
-  "server_name": "dev2.eventat.com",
-  "ingress": {
-    "enabled": true,
-    "className": "nginx",
-    "annotations": {
-      "cert-manager.io/cluster-issuer": "letsencrypt-staging"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "namespace": {
+      "type": "string",
+      "title": "Namespace"
     },
-    "hosts": [
-      {
-        "host": "dev2.eventat.com",
-        "paths": [
-          {
-            "path": "/",
-            "pathType": "ImplementationSpecific"
+    "replicaCount": {
+      "type": "integer",
+      "title": "Replica Count"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": { "type": "string" },
+        "pullPolicy": { "type": "string" },
+        "tag": { "type": "string" }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "port": { "type": "integer" },
+        "containerPort": { "type": "integer" }
+      }
+    },
+    "server_name": {
+      "type": "string",
+      "title": "Server Name"
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "className": { "type": "string" },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": { "type": "string" },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": { "type": "string" },
+                    "pathType": { "type": "string" }
+                  }
+                }
+              }
+            }
           }
-        ]
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": { "type": "string" },
+              "hosts": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
       }
-    ],
-    "tls": [
-      {
-        "secretName": "ssl-tls",
-        "hosts": [
-          "dev2.eventat.com"
-        ]
-      }
-    ]
+    }
   }
 }
