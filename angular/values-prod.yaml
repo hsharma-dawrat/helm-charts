@@ -1,0 +1,36 @@
+# Default values for angular.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+namespace: eventat
+replicaCount: 2
+
+image:
+  repository: registry.digitalocean.com/eventat/angular-prod
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.0.2"
+
+
+service:
+  type: ClusterIP
+  port: 80
+  containerPort: 4000
+server_name: preprod.eventat.com
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: 
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: preprod.eventat.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: 
+    - secretName: preprod-tls
+      hosts:
+        - preprod.eventat.com
+
