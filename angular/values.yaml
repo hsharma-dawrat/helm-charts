@@ -1,6 +1,7 @@
 # Default values for angular.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+---
 namespace: eventat-api-staging
 replicaCount: 2
 
@@ -33,4 +34,3 @@ ingress:
     - secretName: ssl-tls
       hosts:
         - dev2.eventat.com
-
