@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    namespace: {{ .Values.global.namespace }}
+    name: nginx-conf
+    labels:
+        {{- include "api.labels" . | nindent 4 }}
+data:
+    default.conf.template: | 
+      log_format custom '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" "$host" "$http_cf_ray"';
+      access_log  /var/log/nginx/access.log  custom;
+      server {
+        listen 80 http2;
+        server_name ${api_url};
+        client_max_body_size 250M;  
+        error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 418 421 422 423 424 425 426 428 429 431 451 500 501 502 504 505 506 507 508 510 511 /error.html;
+        location = /error.html {
+        ssi on;
+        internal;
+        }
+
+        location / {
+            include uwsgi_params;
+            uwsgi_pass 127.0.0.1:5000;
+            uwsgi_read_timeout 60;
+            uwsgi_send_timeout 60;
+            uwsgi_param   HTTP_X-Real-IP        $proxy_protocol_addr;
+            uwsgi_param   HTTP_X-Forwarded-For  $proxy_protocol_addr;
+            uwsgi_param   HTTP_X-CF-Ray $http_cf_ray;
+            gzip on;
+            gzip_disable "msie6";
+            gzip_comp_level 6;
+            gzip_min_length 1100;
+            gzip_buffers 16 8k;
+            gzip_proxied any;
+            gzip_types
+            text/plain
+            text/css
+            text/js
+            text/xml
+            text/javascript
+            application/javascript
+            application/x-javascript
+            application/json
+            application/xml
+            application/rss+xml
+            image/svg+xml;
+            proxy_connect_timeout 60;
+            proxy_read_timeout 60;
+            proxy_send_timeout 60;
+        }
+
+        location /static/ {
+
+            alias /usr/share/nginx/static/;
+            if ($query_string) {
+
+            expires max;
+            }
+
+        gzip on;
+        gzip_disable "msie6";
+
+        gzip_comp_level 6;
+        gzip_min_length 1100;
+        gzip_buffers 16 8k;
+        gzip_proxied any;
+        gzip_types
+        text/plain
+        text/css
+        text/js
+        text/xml
+        text/javascript
+        application/javascript
+        application/x-javascript
+        application/json
+        application/xml
+        application/rss+xml
+        image/svg+xml;
+        }
+        }

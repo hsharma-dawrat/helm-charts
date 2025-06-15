@@ -1,0 +1,178 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.global.namespace }}
+  name: {{ include "celery-announcements.fullname" . }}
+  labels:
+    {{- include "celery-announcements.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.global.celery.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "celery-announcements.selectorLabels" . | nindent 6 }}
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1    
+  template:
+    metadata:
+      labels:
+        {{- include "celery-announcements.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          volumeMounts:
+              - name: nfs-media
+                mountPath: {{ .Values.global.nfs.mediaMountPath}}
+              - name: nfs-logs
+                mountPath: {{ .Values.global.nfs.logsMountPath}} 
+              - name: timezone
+                mountPath: /etc/localtime  
+          command: ["/bin/bash", "-c"]
+          args: [ "/home/web/eventat-web/celery_entrypoint.sh" ]  
+          env:
+           - name: REDIS_HOST
+             value: "{{ .Values.global.redisHost }}"
+           - name: REDIS_PASSWORD
+             valueFrom: 
+                  secretKeyRef:
+                    name: "{{ .Values.global.redisPassword }}"
+                    key: password
+           - name: REDIS_PORT
+             value: "{{ .Values.global.redisPort }}"
+           - name: celery_process
+             value: {{ .Values.celery_name }}
+           - name: POSTGRES_DB
+             value: {{ .Values.global.DB.dbname }}
+           - name: POSTGRES_USER
+             value: {{ .Values.global.DB.dbuser }}
+           - name: POSTGRES_HOST
+             value: "{{ .Values.global.DB.dbhost }}"
+           - name: POSTGRES_PORT
+             value: "{{ .Values.global.DB.dbport }}"    
+           - name: POSTGRES_PASSWORD
+             valueFrom: 
+               secretKeyRef:
+                 name: "{{ .Values.global.DB.password }}"
+                 key: password
+           - name: PGSSLCERT
+             value: /tmp/postgresql.crt
+           - name: LOKI_ENDPOINT
+             value: "{{ .Values.global.LOKI_ENDPOINT }}"  
+           - name: TARGET
+             value: "{{ .Values.global.TARGET }}"
+           - name: MPGS_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: mpgs_password
+           - name: KNET_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: knet_password
+           - name: KNET_TEC_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: knet_tec_password
+           - name: KNET_TEC_WINTERLAND_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: knet_tec_winterland_password
+           - name: KNET_TEC_WARBA_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: knet_tec_warba_password
+           - name: MPGS_TEC_WINTERLAND_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: mpgs_tec_winterland_password   
+           - name: MPGS_TEC_WARBA_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: mpgs_tec_warba_password
+           - name: KNETOLD_PASSWORD
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: knetold_password
+           - name: AWS_SECRET_KEY
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: aws_secret_key
+           - name: META_APP_SECRET
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: meta_app_secret
+           - name: WHATSAPP_ACCESS_TOKEN
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: whatsapp_access_token
+           - name: CLOUDFLARE_TOKEN
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: cloudflare_token
+           - name: BANKMUSCAT_ACCESS_CODE
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: bankmuscat_access_code
+           - name: BANKMUSCAT_WORKING_KEY
+             valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: bankmuscat_working_key
+        {{- if .Values.global.celery.resources.enabled }} 
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requestsCPU}}
+              memory: {{ .Values.resources.requestsMemory}}
+        {{- end }}  
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: 
+        doks.digitalocean.com/node-pool: {{ .Values.global.nodeSelector }}
+      {{- end }}  
+    {{- if .Values.global.tolerations }}       
+      tolerations:
+      - effect: "{{ .Values.global.tollerations.effect }}"
+        key: "{{ .Values.global.tollerations.key }}"
+        operator: "{{ .Values.global.tollerations.operator }}"
+        value: "{{ .Values.global.tollerations.value }}"
+    {{- end }} 
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                  matchLabels:
+                    name: {{ .Values.celery_name }}
+              topologyKey: "kubernetes.io/hostname"              
+      volumes:
+      - name: nfs-media
+        nfs: 
+          server: {{ .Values.global.nfs.serverIP}}
+          path: {{ .Values.global.nfs.media_Path}}
+      - name: nfs-logs
+        nfs:  
+          server: {{ .Values.global.nfs.serverIP}}
+          path: {{ .Values.global.nfs.logs_Path}}   
+      - name: timezone
+        hostPath: 
+          path: /usr/share/zoneinfo/Asia/Kuwait       

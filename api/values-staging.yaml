@@ -1,0 +1,107 @@
+# Default values for api-eventat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#This is staging env values file. 
+global:
+  namespace: eventat-api-staging
+# Mention application environment using env. This value could be prod or staging only.
+  env: staging
+  replicaCount: 2
+  nodeSelector: api-staging
+#Enable toleation if pod need to schedule to taints node.
+#  tolerations: api-staging
+#    effect:
+#    key:
+#    operator:
+#    value:
+
+  image:
+    repository: registry.digitalocean.com/eventat/api-staging
+    pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+    tag: "1.41"
+  DB:
+    dbname: eventat
+    dbuser: doadmin
+    dbhost: private-db-staging-do-user-15715457-0.c.db.ondigitalocean.com
+    dbport: 25060  
+    password: dbpass-staging
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  redisHost: redis
+  redisPassword: redispass-staging
+  redisPort: 6379
+  nfs:
+    serverIP: 10.110.0.6
+    media_Path: /nfsshare/media
+    logs_Path: /nfsshare/staging_logs
+    mediaMountPath: /home/web/eventat-web/media
+    logsMountPath: /home/web/logs
+  ## Below config used to enable/disable HPA and resource limit for celery pods. Once these enabled 
+  ## celery chart will pick values from their corsponding values.yaml file. 
+  celery:
+    autoscaling:
+      enabled: false
+    replicaCount: 1
+    resources: 
+      enabled: false
+  LOKI_ENDPOINT: http://loki-gateway.monitoring-staging.svc.cluster.local/loki/api/v1/push
+  TARGET: STAGING   
+uwsgi:
+  processes: 3
+  
+  
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 85
+  targetMemoryUtilizationPercentage: 90
+resources:
+  requestsCPU: 200m
+  requestsMemory: 500M
+api_url: devapi2.eventat.com devapi3.eventat.com devapi4.eventat.com
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: 
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+   # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"  
+  hosts:
+    - host: devapi2.eventat.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: devapi3.eventat.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: devapi4.eventat.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific            
+  tls:
+    - hosts:
+      - devapi2.eventat.com
+      - devapi3.eventat.com
+      - devapi4.eventat.com
+      secretName: devapi-tls  
+#celery:
+#  replicaCount: 1
+#  celery_name: celery
+#celery-announcements: 
+##  replicaCount: 1
+#  celery_name: celery-announcements 
+#celery-bookings:
+#  replicaCount: 1
+#  celery_name: celery-bookings  
+##celery-events:
+#  replicaCount: 1
+#  celery_name: celery-events  
+#celery-push-notifications:
+#  replicaCount: 1
+#  celery_name: celery-push_notifications       

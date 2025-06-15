@@ -1,6 +1,6 @@
 apiVersion: v2
-name: angular
-description: Helm chart for Angular applications
+name: api
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -15,10 +15,27 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.6
+version: 0.2.2
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
+dependencies:
+  - name: celery
+    version: 0.1.1
+    repository: file://celery
+  - name: celery-bookings
+    version: 0.1.1
+    repository: file://celery-bookings  
+  - name: celery-events
+    version: 0.1.1
+    repository: file://celery-events
+  - name: celery-push-notifications
+    version: 0.1.1
+    repository: file://celery-push-notifications 
+  - name: celery-announcements
+    version: 0.1.1
+    repository: file://celery-announcements   
+

@@ -1,0 +1,31 @@
+# Default values for celery.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: registry.digitalocean.com/eventat/api-staging
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+redisHost: redis
+ingress:
+  enabled: false
+celery_name: celery-bookings
+celery_env: PRODUCTION
+resources:
+  requestsCPU: 100m
+  requestsMemory: 700M
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 80   
+#nfs:
+#  serverIP: 10.110.0.2
+#  media_Path: /nfsshare/media
+#  logs_Path: /nfsshare/logs
+#  mediaMountPath: /home/web/eventat-web/media
+#  logsMountPath: /home/web/logs  

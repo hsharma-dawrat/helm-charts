@@ -1,0 +1,102 @@
+# Default values for api-eventat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  namespace: eventat
+# Mention application environment using env. This value could be prod or staging only.
+  env: prod
+  replicaCount: 5
+  node_pools: eventat
+#  tolerations: prod
+  service:
+    type: ClusterIP
+    port: 80
+
+  image:
+    repository: registry.digitalocean.com/eventat/api
+    pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+    tag: "1.2.25"
+  DB:
+    dbname: app-pool
+    dbuser: doadmin
+    dbhost: private-prod-cluster-do-user-15715457-0.i.db.ondigitalocean.com
+    dbport: 25061
+    password: dbpass-prod
+
+  redisHost: private-prod-redis-cluster-do-user-15715457-0.f.db.ondigitalocean.com
+  redisPassword: redispass-prod
+  redisPort: 25061
+  nfs:
+    serverIP: 10.110.0.6
+    media_Path: /nfsshare/media
+    logs_Path: /nfsshare/logs
+    mediaMountPath: /home/web/eventat-web/media
+    logsMountPath: /home/web/logs
+  ## Below config used to enable/disable HPA and resource limit for celery pods. Once these enabled 
+  ## celery chart will pick values from their corsponding values.yaml file. 
+  celery:
+    autoscaling:
+      enabled: true
+    replicaCount: 2
+    resources: 
+      enabled: true
+  LOKI_ENDPOINT: http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push 
+  TARGET: PRODUCTION    
+uwsgi:
+  processes: 10
+  
+autoscaling:
+  enabled: true
+  minReplicas: 10
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 40
+  targetMemoryUtilizationPercentage: 70
+resources:
+  requestsCPU: 1000m
+  requestsMemory: 1500M
+service:
+  type: ClusterIP
+  port: 80    
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: api.eventat.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: thearenakuwait.cloud
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: teckuwait.cloud 
+      paths:
+        - path: /
+          pathType: ImplementationSpecific      
+  tls:
+    - secretName: prodapi-tls
+      hosts:
+        - api.eventat.com
+        - thearenakuwait.cloud
+        - teckuwait.cloud
+api_url: api.eventat.com thearenakuwait.cloud teckuwait.cloud
+#celery:
+#  replicaCount: 1
+#  celery_name: celery
+#celery-announcements: 
+#  replicaCount: 1
+#  celery_name: celery-announcements 
+#celery-bookings:
+##  replicaCount: 1
+#  celery_name: celery-bookings  
+#celery-events:
+#  replicaCount: 1
+#  celery_name: celery-events  
+#celery-push-notifications:
+#  replicaCount: 1
+#  celery_name: celery-push_notifications       

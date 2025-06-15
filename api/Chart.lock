@@ -1,0 +1,18 @@
+dependencies:
+- name: celery
+  repository: file://celery
+  version: 0.1.1
+- name: celery-bookings
+  repository: file://celery-bookings
+  version: 0.1.1
+- name: celery-events
+  repository: file://celery-events
+  version: 0.1.1
+- name: celery-push-notifications
+  repository: file://celery-push-notifications
+  version: 0.1.1
+- name: celery-announcements
+  repository: file://celery-announcements
+  version: 0.1.1
+digest: sha256:9fed9ee2088244506ab2d763532aa866e7b3e853810b6b117cd56662072ed819
+generated: "2025-06-01T04:22:33.549632494Z"

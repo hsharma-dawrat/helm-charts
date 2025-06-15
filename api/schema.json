@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "namespace": { "type": "string", "title": "Namespace" },
+        "env": {
+          "type": "string",
+          "title": "Environment",
+          "enum": ["staging", "prod"]
+        },
+        "replicaCount": { "type": "integer", "title": "Replica Count" },
+        "nodeSelector": { "type": "string", "title": "Node Selector" },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string" },
+            "pullPolicy": { "type": "string" },
+            "tag": { "type": "string" }
+          }
+        },
+        "DB": {
+          "type": "object",
+          "properties": {
+            "dbname": { "type": "string" },
+            "dbuser": { "type": "string" },
+            "dbhost": { "type": "string" },
+            "dbport": { "type": "integer" },
+            "password": { "type": "string" }
+          }
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string" },
+            "port": { "type": "integer" }
+          }
+        },
+        "redisHost": { "type": "string" },
+        "redisPassword": { "type": "string" },
+        "redisPort": { "type": "integer" },
+        "nfs": {
+          "type": "object",
+          "properties": {
+            "serverIP": { "type": "string" },
+            "media_Path": { "type": "string" },
+            "logs_Path": { "type": "string" },
+            "mediaMountPath": { "type": "string" },
+            "logsMountPath": { "type": "string" }
+          }
+        },
+        "celery": {
+          "type": "object",
+          "properties": {
+            "autoscaling": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" }
+              }
+            },
+            "replicaCount": { "type": "integer" },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "LOKI_ENDPOINT": { "type": "string" },
+        "TARGET": { "type": "string" }
+      }
+    },
+    "uwsgi": {
+      "type": "object",
+      "properties": {
+        "processes": { "type": "integer" }
+      }
+    },
+    "autoscaling": {
+    "type": "object",
+    "title": "Autoscaling Configuration", 
+    "properties": {
+    "enabled": { "type": "boolean", "title": "Enable Autoscaling", "default": false },
+    "MinReplicas": { "type": "integer", "title": "Minimum Replicas", "default": 1 },
+    "MaxReplicas": { "type": "integer", "title": "Maximum Replicas", "default": 5 },
+    "targetCPUUtilizationPercentage": { "type": "integer", "title": "Target CPU Utilization (%)", "default": 80 },
+    "targetMemoryUtilizationPercentage": { "type": "integer", "title": "Target Memory Utilization (%)", "default": 80 }
+    },
+    "required": ["enabled", "MinReplicas", "MaxReplicas"]
+  
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requestsCPU": { "type": "string" },
+        "requestsMemory": { "type": "string" }
+      }
+    },
+    "api_url": { "type": "string" },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "className": { "type": "string" },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": { "type": "string" },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": { "type": "string" },
+                    "pathType": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": { "type": "string" },
+              "hosts": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
