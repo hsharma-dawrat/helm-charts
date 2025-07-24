@@ -1,9 +1,7 @@
 {
-    "server": {
-        "deployment": {
-            "image_tag": "{{.Tag}}",
-            "image": "{{.Name}}"
-        }
+    "image": {
+    "repository": "{{.Name}}",
+    "tag": "{{.Tag}}"
     },
     "pipelineName": "{{.PipelineName}}",
     "releaseVersion": "{{.ReleaseVersion}}",
