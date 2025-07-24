@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 ---
-namespace: eventat-api-staging
+#namespace: eventat-api-staging
 replicaCount: 2
 
 image:
@@ -34,3 +34,10 @@ ingress:
     - secretName: ssl-tls
       hosts:
         - dev2.eventat.com
+#Enable this if you want to use the taints and tolerations
+tolerations:
+  effect: NoSchedule
+  key: env
+  operator: Equal
+  value: frontend
+nodeSelector: frontend-pool

@@ -34,6 +34,33 @@ spec:
               protocol: TCP
           env:
             - name: SERVER_NAME
-              value: {{ .Values.server_name }}    
-
-
+              value: {{ .Values.server_name }}
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
+              readOnly: true
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Kuwait
+            type: File
+      {{- if .Values.nodeSelector }}
+      nodeSelector: 
+        doks.digitalocean.com/node-pool: {{ .Values.nodeSelector }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        - effect: "{{ .Values.tolerations.effect }}"
+          key: "{{ .Values.tolerations.key }}"
+          operator: "{{ .Values.tolerations.operator }}"
+          value: "{{ .Values.tolerations.value }}"
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    name: api
+                topologyKey: "kubernetes.io/hostname"
