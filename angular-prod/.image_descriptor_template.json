@@ -1,0 +1,12 @@
+{
+    "image": {
+    "repository": "{{.Name}}",
+    "tag": "{{.Tag}}"
+    },
+    "pipelineName": "{{.PipelineName}}",
+    "releaseVersion": "{{.ReleaseVersion}}",
+    "deploymentType": "{{.DeploymentType}}",
+    "app": "{{.App}}",
+    "env": "{{.Env}}",
+    "appMetrics": {{.AppMetrics}}
+}

@@ -1,0 +1,6 @@
+---
+# Provide Web URL which will be used to access the application.
+server_name: dev2.eventat.com
+# Change ingress to false if you do not want to use ingress.
+ingress:
+  enabled: true
