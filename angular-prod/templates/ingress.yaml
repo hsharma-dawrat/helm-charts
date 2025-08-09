@@ -21,7 +21,7 @@ metadata:
     {{- include "angular.labels" . | nindent 4 }}
   annotations:
     {{- if not (hasKey .Values.ingress.annotations "cert-manager.io/cluster-issuer") }}
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     {{- end }}
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
 
@@ -33,7 +33,7 @@ spec:
   tls:
   - hosts:
       - {{ .Values.server_name }}
-    secretName: ssl-tls
+    secretName: {{ .Values.server_name }}-tls
   {{- end }}
   rules:
     - host: {{ .Values.server_name }}

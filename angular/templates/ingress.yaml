@@ -33,7 +33,7 @@ spec:
   tls:
   - hosts:
       - {{ .Values.server_name }}
-    secretName: ssl-tls
+    secretName: {{ .Values.server_name }}-tls
   {{- end }}
   rules:
     - host: {{ .Values.server_name }}

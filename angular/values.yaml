@@ -31,8 +31,7 @@ ingress:
         - path: /
           pathType: ImplementationSpecific
   tls: 
-    - secretName: ssl-tls
-      hosts:
+     - hosts:
         - dev2.eventat.com
 #Enable this if you want to use the taints and tolerations
 tolerations:
