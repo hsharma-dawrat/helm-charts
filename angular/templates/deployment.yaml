@@ -56,6 +56,10 @@ spec:
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 3
+          resources:
+              requests:
+                cpu: {{ .Values.resources.requestsCPU}}
+                memory: {{ .Values.resources.requestsMemory}}  
       volumes:
         - name: timezone
           hostPath:
