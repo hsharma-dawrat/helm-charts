@@ -35,6 +35,8 @@ spec:
           env:
             - name: SERVER_NAME
               value: {{ .Values.server_name }}
+            - name: STAFF_URL
+              value: {{ .Values.ingress.staff.staff_url | default (printf "staff.%s" .Values.server_name) }}  
           volumeMounts:
             - name: timezone
               mountPath: /etc/localtime

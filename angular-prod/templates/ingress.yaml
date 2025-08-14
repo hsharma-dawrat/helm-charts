@@ -33,6 +33,9 @@ spec:
   tls:
   - hosts:
       - {{ .Values.server_name }}
+      {{- if .Values.ingress.staff.enabled }}
+      - {{ .Values.ingress.staff.staff_url | default (printf "staff.%s" .Values.server_name) }}
+      {{- end }}
     secretName: {{ .Values.server_name }}-tls
   {{- end }}
   rules:
@@ -51,5 +54,23 @@ spec:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
               {{- end }}
+    {{- if .Values.ingress.staff.enabled }}
+    # Staff subdomain
+    - host: {{ .Values.ingress.staff.staff_url | default (printf "staff.%s" .Values.server_name) }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+              {{- end }}
+    {{- end }}          
 {{- end }}  {{/* <-- ends .Values.ingress.enabled */}}
   

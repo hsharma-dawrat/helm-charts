@@ -33,6 +33,10 @@ ingress:
   tls: 
      - hosts:
         - dev2.eventat.com
+  staff:
+    enabled: false
+    # Change this to true if you want to use the staff subdomain.
+    staff_url: staff.eventat.com      
 #Enable this if you want to use the taints and tolerations
 tolerations:
   effect: NoSchedule
