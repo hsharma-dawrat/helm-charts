@@ -39,10 +39,10 @@ ingress:
 #Enable this if you want to use the taints and tolerations
 tolerations:
   effect: NoSchedule
-  key: env
+  key: stack
   operator: Equal
-  value: frontend
-nodeSelector: frontend-pool
+  value: arena-eventat-tec
+nodeSelector: common-pool-4cpu-shared
 autoscaling:
   enabled: true
   minReplicas: 1
