@@ -6,6 +6,11 @@ metadata:
   labels:
     {{- include "angular.labels" . | nindent 4 }}
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -36,7 +41,9 @@ spec:
             - name: SERVER_NAME
               value: {{ .Values.server_name }}
             - name: STAFF_URL
-              value: {{ .Values.ingress.staff.staff_url | default (printf "staff.%s" .Values.server_name) }}  
+              value: {{ .Values.ingress.staff.staff_url | default (printf "staff.%s" .Values.server_name) }}
+            - name: X_ROBOTS_VALUE
+              value: {{ .Values.x_robots_value | quote }}
           volumeMounts:
             - name: timezone
               mountPath: /etc/localtime
